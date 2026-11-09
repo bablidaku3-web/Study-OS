@@ -1,15 +1,17 @@
 export type FocusActivity = "Theory" | "Numericals" | "PYQs" | "Practice" | "Revision";
 export type FocusSessionStatus = "completed" | "interrupted";
+export type FocusTimerMode = "pomodoro" | "custom" | "stopwatch" | "countdown" | "short-break" | "long-break" | "interval" | "revision";
 
 export type FocusSession = {
   id: string;
-  mode: "pomodoro" | "custom";
+  mode: FocusTimerMode;
   subject: string;
   chapter: string;
   topic: string;
   activity: FocusActivity;
   startedAt: string;
   endedAt: string;
+  /** Active study seconds only; pause and all break phases are excluded. */
   focusedSeconds: number;
   status: FocusSessionStatus;
 };
@@ -21,13 +23,15 @@ export interface FocusSessionRepository {
 }
 
 const STORAGE_KEY = "shunya-focus-sessions-v1";
+const modes: FocusTimerMode[] = ["pomodoro", "custom", "stopwatch", "countdown", "short-break", "long-break", "interval", "revision"];
+const activities: FocusActivity[] = ["Theory", "Numericals", "PYQs", "Practice", "Revision"];
 
 function isFocusSession(value: unknown): value is FocusSession {
   if (!value || typeof value !== "object") return false;
   const item = value as Partial<FocusSession>;
-  return typeof item.id === "string" && (item.mode === "pomodoro" || item.mode === "custom") &&
+  return typeof item.id === "string" && modes.includes(item.mode as FocusTimerMode) &&
     typeof item.subject === "string" && typeof item.chapter === "string" && typeof item.topic === "string" &&
-    typeof item.activity === "string" && typeof item.startedAt === "string" && typeof item.endedAt === "string" &&
+    activities.includes(item.activity as FocusActivity) && typeof item.startedAt === "string" && typeof item.endedAt === "string" &&
     typeof item.focusedSeconds === "number" && Number.isFinite(item.focusedSeconds) && item.focusedSeconds >= 0 &&
     (item.status === "completed" || item.status === "interrupted");
 }
