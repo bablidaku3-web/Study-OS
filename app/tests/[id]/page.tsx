@@ -18,7 +18,7 @@ function isCorrect(question: TestQuestion, answer: string | string[] | undefined
   const given = (Array.isArray(answer) ? answer : [answer]).map(String).sort();
   return expected.length === given.length && expected.every((value,index)=>value===given[index]);
 }
-export function calculateTestResult(test: StudyTest, attempt: TestAttempt, submittedAt = new Date().toISOString()): TestResult {
+function calculateTestResult(test: StudyTest, attempt: TestAttempt, submittedAt = new Date().toISOString()): TestResult {
   const subjectMap = new Map<string,{marks:number;total:number;correct:number;incorrect:number}>();
   const chapterMap = new Map<string,{subject:string;chapter:string;marks:number;total:number;correct:number;incorrect:number}>();
   let marksObtained = 0; let correct = 0; let incorrect = 0; let unattempted = 0;

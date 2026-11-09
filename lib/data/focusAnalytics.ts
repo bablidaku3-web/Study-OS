@@ -72,7 +72,7 @@ export function buildAnalytics(sessions: FocusSession[], reference = new Date(),
       const name = key(session).trim() || unknownLabel;
       map.set(name, (map.get(name) || 0) + session.focusedSeconds);
     });
-    return [...map.entries()].map(([name, seconds]) => ({ name, seconds })).sort((a, b) => b.seconds - a.seconds);
+    return Array.from(map.entries()).map(([name, seconds]) => ({ name, seconds })).sort((a, b) => b.seconds - a.seconds);
   };
   const chapters = groupBy((session) => session.chapter, "Unspecified chapter");
   const topics = groupBy((session) => session.topic, "Unspecified topic");

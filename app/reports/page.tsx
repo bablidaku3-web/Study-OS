@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, BarChart3, BookOpen, CalendarDays, Check, Clock3, Download, FileText, TrendingUp } from "lucide-react";
+import { ArrowLeft, BarChart3, BookOpen, CalendarDays, Check, Clock3, Download, FileText, RotateCcw, TrendingUp } from "lucide-react";
 import { Chapter, chapterRepository } from "@/lib/data/chapterRepository";
 import { FocusSession, focusSessionRepository } from "@/lib/data/focusSessionRepository";
 import { Flashcard, flashcardRepository } from "@/lib/data/flashcardRepository";

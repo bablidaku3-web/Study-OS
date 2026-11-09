@@ -48,6 +48,7 @@ export type TestAttempt = {
 };
 export interface TestRepository {
   listTests(): Promise<StudyTest[]>;
+  listAttempts(): Promise<TestAttempt[]>;
   getTest(id: string): Promise<StudyTest | null>;
   createTest(test: StudyTest): Promise<void>;
   getAttempt(testId: string): Promise<TestAttempt | null>;
@@ -93,6 +94,7 @@ function isAttempt(value: unknown): value is TestAttempt {
 }
 class LocalTestRepository implements TestRepository {
   async listTests() { return safeRead(TESTS_KEY, isTest); }
+  async listAttempts() { return safeRead(ATTEMPTS_KEY, isAttempt); }
   async getTest(id: string) { return (await this.listTests()).find((test) => test.id === id) || null; }
   async createTest(test: StudyTest) {
     const existing = await this.listTests();

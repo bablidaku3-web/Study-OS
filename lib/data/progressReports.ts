@@ -4,6 +4,7 @@ import { Flashcard } from "./flashcardRepository";
 import { RevisionSchedule } from "./revisionRepository";
 import { Chapter } from "./chapterRepository";
 import { MistakeRecord } from "./mistakeRepository";
+import { buildChapterPerformance } from "./performanceAnalysis";
 
 export type ReportExam = "JEE Main" | "JEE Advanced" | "NEET UG";
 export type ReportRange = { from: string; to: string };
@@ -40,9 +41,7 @@ export function buildProgressReport(input:{exam:ReportExam;range:ReportRange;foc
   const subjectTime=subjects.map((subject)=>({subject,seconds:focus.filter((session)=>session.subject===subject).reduce((sum,item)=>sum+item.focusedSeconds,0)}));
   const subjectAccuracy=subjects.map((subject)=>{let total=0,correct=0;attempts.forEach((attempt)=>{const test=testMap.get(attempt.testId)!;test.questions.filter((question)=>question.subject===subject).forEach((question)=>{const value=attempt.answers[question.id]?.value;if(answered(value)){total++;if(questionCorrect(question,value))correct++;}});});return {subject,attempted:total,correct,accuracy:total?Math.round(correct/total*100):null};});
   const scoreTrend=attempts.map((attempt)=>{const test=testMap.get(attempt.testId)!;return {id:attempt.id,title:test.title,submittedAt:attempt.submittedAt!,score:attempt.result!.marksObtained,total:attempt.result!.totalMarks,accuracy:attempt.result!.accuracy};});
-  const chapterMap=new Map<string,{subject:string;chapter:string;attempted:number;correct:number}>();
-  attempts.forEach((attempt)=>{const test=testMap.get(attempt.testId)!;test.questions.forEach((question)=>{const value=attempt.answers[question.id]?.value;if(!answered(value))return;const key=`${question.subject}\u0000${question.chapter}`;const row=chapterMap.get(key)||{subject:question.subject,chapter:question.chapter,attempted:0,correct:0};row.attempted++;if(questionCorrect(question,value))row.correct++;chapterMap.set(key,row);});});
-  const chapterAccuracy=[...chapterMap.values()].map((item)=>({...item,accuracy:Math.round(item.correct/item.attempted*100)})).sort((a,b)=>a.accuracy-b.accuracy);
+  const chapterAccuracy=buildChapterPerformance(examTests,attempts).sort((a,b)=>a.accuracy-b.accuracy);
   const revisions=input.revisions.filter((schedule)=>schedule.exam===(exam==="NEET UG"?"NEET":"JEE"));
   const revisionEvents=revisions.flatMap((schedule)=>schedule.history.filter((event)=>event.action==="completed"&&event.date>=range.from&&event.date<=range.to).map((event)=>({date:event.date,chapter:schedule.chapter,subject:schedule.subject,durationMinutes:event.durationMinutes})));
   const revisionDaily=new Map<string,number>();revisionEvents.forEach((event)=>revisionDaily.set(event.date,(revisionDaily.get(event.date)||0)+1));

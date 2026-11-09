@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   Activity, ArrowLeft, ArrowRight, Bell, BookOpen, CalendarDays, Check,
   CheckCircle2, ChevronLeft, ChevronRight, Circle, Clock3, Flame, LayoutDashboard,
-  ListTodo, Menu, Moon, Plus, Sun, Target, Timer, Trash2, X, Pencil, RotateCcw
+  ListTodo, Menu, Moon, Plus, Settings, Sun, Target, Timer, Trash2, X, Pencil, RotateCcw
 } from "lucide-react";
+import StudentProfileForm from "@/components/StudentProfileForm";
+import { loadStudentProfile, saveStudentProfile, StudentProfile, StudentProfileLoadResult } from "@/lib/data/studentProfileRepository";
 
 type Kind = "session" | "checklist" | "todo";
 type Priority = "High" | "Medium" | "Low";
@@ -59,6 +62,9 @@ export default function StudyOS() {
   const [goalHours, setGoalHours] = useState(6);
   const [lightMode, setLightMode] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [profileState, setProfileState] = useState<StudentProfileLoadResult>({ profile: null, invalid: false });
+  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
   const [view, setView] = useState<"day" | "week">("day");
   const [showSessionForm, setShowSessionForm] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -85,6 +91,13 @@ export default function StudyOS() {
       }
     } catch { setToast("Saved planner data could not be read. You can continue with a fresh planner."); }
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    const result = loadStudentProfile();
+    setProfileState(result);
+    setStudentProfile(result.profile);
+    setProfileLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -130,6 +143,11 @@ export default function StudyOS() {
   function removeItem(item: PlannerItem) { setItems((current) => current.filter((entry) => entry.id !== item.id)); }
   function reschedule(item: PlannerItem) { const next = addDays(selectedDate, 1); setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, date: next, status: "planned" } : entry)); notify(`Moved to ${formatDate(next)}.`); }
   function moveWeek(amount: number) { setSelectedDate(addDays(selectedDate, amount * 7)); }
+  function saveProfile(input: Omit<StudentProfile, "updatedAt">) {
+    const profile = saveStudentProfile(input);
+    setStudentProfile(profile);
+    setProfileState({ profile, invalid: false });
+  }
   function selectNavigation(label: string) { if (label !== "Day planner" && label !== "Overview") notify(`${label} will be added in its implementation phase.`); else if (label === "Overview") notify("Your study planner is ready. Overview analytics will use your saved study data."); setMenuOpen(false); }
 
   function Sidebar() {
@@ -143,10 +161,18 @@ export default function StudyOS() {
       </nav>
       <div className="sidebar-bottom">
         <div className="study-card"><p><Target size={12} style={{ verticalAlign: "-2px", marginRight: 5 }} /> DAILY STUDY GOAL</p><strong>{goalHours} hours</strong><div className="progress-track"><div className="progress-fill" style={{ width: `${Math.min(100, completeMinutes / (goalHours * 60) * 100)}%` }} /></div></div>
-        <div className="profile"><div className="avatar">S</div><div><strong>SHUNYA student</strong><span>Personal planner · This device</span></div></div>
+        <div className="profile"><div className="avatar">{studentProfile?.name.charAt(0).toUpperCase() || "S"}</div><div><strong>{studentProfile?.name || "Student"}</strong><span>{studentProfile ? `${studentProfile.classLevel === "Other" ? studentProfile.classOther || "Other" : studentProfile.classLevel === "Dropper" ? "Dropper" : `Class ${studentProfile.classLevel}`} · This device` : "Personal planner · This device"}</span></div></div>
+        <Link href="/settings" className="nav-item"><Settings size={15} /> Settings</Link>
       </div>
     </aside>;
   }
+
+  if (!profileLoaded) return <main className="loading-shade" aria-label="Loading student profile" />;
+  if (!studentProfile) return <StudentProfileForm
+    mode="onboarding"
+    invalidStoredProfile={profileState.invalid}
+    onSave={saveProfile}
+  />;
 
   return <div className={`shell ${lightMode ? "light" : ""}`}>
     <Sidebar />

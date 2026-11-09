@@ -5,7 +5,8 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, BookOpen, Check, Clock3, ImagePlus, LoaderCircle, Plus, RotateCcw, Send, Sparkles, Trash2 } from "lucide-react";
 import { Chapter, chapterRepository } from "@/lib/data/chapterRepository";
 import { DoubtMode, DoubtRecord, doubtRepository } from "@/lib/data/doubtRepository";
-import { ExamCategory, ExamType, MistakeRecord, mistakeRepository } from "@/lib/data/mistakeRepository";
+import { ExamCategory, MistakeRecord, mistakeRepository } from "@/lib/data/mistakeRepository";
+import { ExamType } from "@/lib/data/testRepository";
 import { DEFAULT_REVISION_INTERVALS, RevisionSchedule, revisionRepository } from "@/lib/data/revisionRepository";
 import styles from "./doubts.module.css";
 

@@ -120,9 +120,10 @@ export function getSubjectPerformance(tests: StudyTest[], attempts: TestAttempt[
   });
   return [...map.entries()].map(([subject, row]) => ({ subject, attempted: row.attempted, correct: row.correct, accuracy: Math.round(row.correct / row.attempted * 100), testCount: row.testIds.size })).sort((a, b) => b.attempted - a.attempted);
 }
-export function revisionImpact(schedules: import("./revisionRepository").RevisionSchedule[], tests: StudyTest[], attempts: TestAttempt[]) {
+type RevisionImpact = { scheduleId: string; subject: string; chapter: string; beforeAccuracy: number | null; afterAccuracy: number | null; beforeCount: number; afterCount: number; message: string };
+export function revisionImpact(schedules: import("./revisionRepository").RevisionSchedule[], tests: StudyTest[], attempts: TestAttempt[]): RevisionImpact[] {
   const testById = new Map(tests.map((test) => [test.id, test]));
-  return schedules.flatMap((schedule) => {
+  return schedules.flatMap((schedule): RevisionImpact[] => {
     const revisionDates = schedule.history.filter((event) => event.action === "completed").map((event) => event.date).sort();
     if (!revisionDates.length) return [];
     const firstRevision = revisionDates[0];

@@ -8,3 +8,10 @@
 
 ## Validation
 Run `npm run typecheck`, `npm run lint`, `npm run build`, and test browser permission, quiet hours, deduplication, recurring reminders, and storage. Node.js is unavailable in the repository editing environment; these checks and browser workflows were not executed here.
+
+## AI API rate-limit deployment
+- Both AI endpoints require `OPENAI_API_KEY` and a shared Redis-compatible REST limiter in production. Configure `RATE_LIMIT_REDIS_REST_URL`, `RATE_LIMIT_REDIS_REST_TOKEN`, and `RATE_LIMIT_HMAC_SECRET` as deployment secrets. The HMAC secret must contain at least 32 characters; generate a random value, for example with `openssl rand -hex 32`. Never commit these values.
+- The hosting adapter must provide the trusted client address through Next.js `request.ip`. For a self-hosted deployment, configure the trusted reverse proxy to discard client-supplied forwarding headers and set the real client address before passing requests to Next.js. The endpoints fail closed with 503 when production rate-limit settings or a trusted client address are unavailable.
+- Local development uses a process-local memory limiter only when none of the rate-limit settings are configured. It is not suitable for production or multiple application instances.
+- Default limits are 5 doubt requests per minute and 40 per day; Study Coach allows 8 per minute and 60 per day, per IP and endpoint. Students sharing a public IP also share these quotas.
+- JSON bodies are capped at 3,750,000 bytes for Doubt Solver (including up to 2.5 MiB images) and 65,536 bytes for Study Coach. Configure any ingress/proxy body limit at or above these values so the application can return its own validation errors.

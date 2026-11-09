@@ -5,7 +5,7 @@ import { TestAttempt } from "./testRepository";
 export type RevisionStatus = "active" | "completed";
 export type RevisionEvent = {
   id: string;
-  action: "completed" | "skipped" | "rescheduled";
+  action: "completed" | "skipped" | "rescheduled" | "flashcard-review";
   date: string;
   durationMinutes: number;
   note: string;
@@ -37,7 +37,7 @@ const examValues: ExamCategory[] = ["JEE", "NEET", "CA", "UPSC"];
 function isRecord(value: unknown): value is Record<string, unknown> { return !!value && typeof value === "object" && !Array.isArray(value); }
 function isEvent(value: unknown): value is RevisionEvent {
   if (!isRecord(value)) return false;
-  return typeof value.id === "string" && ["completed", "skipped", "rescheduled"].includes(String(value.action)) &&
+  return typeof value.id === "string" && ["completed", "skipped", "rescheduled", "flashcard-review"].includes(String(value.action)) &&
     typeof value.date === "string" && typeof value.durationMinutes === "number" && typeof value.note === "string";
 }
 function isSchedule(value: unknown): value is RevisionSchedule {
