@@ -1,15 +1,19 @@
 # SHUNYA — AI StudyOS
 
-## Phase 7 — Smart Performance Analysis & Auto Chapter Zone Suggestions
+## Phase 8 — AI Doubt Solver
+- `/doubts` provides exam/subject/chapter/topic context, five learning modes, typed questions and validated JPEG/PNG/WebP image upload (2.5 MB cap), successful-response history, and actions to add a doubt to the Mistake Vault or create a chapter revision schedule.
+- `/api/doubt` calls the OpenAI Chat Completions API from the server only. `OPENAI_API_KEY` is never sent to client code; `OPENAI_MODEL` optionally selects a model (default `gpt-4o-mini`). Without the key, the route returns an explicit setup error; it never substitutes static/sample answers.
+- Successful answers are stored separately under `shunya-doubt-history-v1`. Uploaded image bytes are request-only and not retained in history. Mistake and revision conversion writes only to their existing repositories.
 
-`/performance` analyzes submitted test attempts, saved Mistake Vault records, existing chapter zones, and revision history. It shows exam-filtered subject/chapter accuracy, submitted test score trends, recent chapter accuracy changes, repeated unresolved mistake categories, and revision-before/after comparisons when sufficient question-level data exists.
+## AI setup
+Set these server-side environment variables (for example in `.env.local`, which must not be committed):
 
-Zone suggestions require at least 5 answered questions per chapter, except a Red suggestion may be surfaced with at least 3 unresolved Mistake Vault entries while clearly stating that test evidence is insufficient. Green requires at least 80% overall accuracy and at least 70% recent accuracy when available with fewer than 2 unresolved mistakes. Red thresholds are <=45% accuracy, 3+ unresolved mistakes, or recent accuracy below 40%; other evidence suggests Yellow. These are transparent heuristics, not mastery claims. Suggestions only draw from actual submitted tests and actual vault entries. Existing assigned zones are protected from automatic writes; accepting applies only when zone is unassigned. Manual override is available and saved through the existing chapter repository.
+```env
+OPENAI_API_KEY=your-server-side-key
+OPENAI_MODEL=gpt-4o-mini
+```
 
-Revision comparisons require at least 5 answered chapter questions before and after the first completed revision. Results are labeled observational, not causal. Test/mock data supports JEE Main, JEE Advanced and NEET UG. CA/UPSC currently have no test-taking/question result source in Phase 5A, so performance analytics for those exams are unavailable unless matching question-level results are added.
+Restart the Next.js server after setting the key. Image questions require a configured vision-capable model. Provider errors are surfaced in the page.
 
-Existing localStorage data is retained. The only new key is `shunya-zone-suggestion-decisions-v1`; original chapter/test/attempt/mistake/revision keys are not migrated or rewritten except user-confirmed chapter-zone changes.
-
-## Validation
-
-The editing environment has no Node.js runtime. `npm run typecheck`, `npm run lint`, `npm run build`, and browser checks were not run here. Run them in local checkout or CI. The Phase 6 page calls `testRepository.listAttempts()`, which was absent when inspected; Phase 7 adds that repository method as a backward-compatible read of the existing attempt key, also fixing the corresponding Phase 5B/6 call sites.
+## Previous Phases and checks
+Existing planner, chapters, focus sessions, tests/attempts, mistakes, revisions and performance data use their independent existing storage. No history is fabricated. Run `npm run typecheck`, `npm run lint`, `npm run build` and test in a browser before deployment. This GitHub editing environment has no Node.js runtime, so those checks were not run here.
