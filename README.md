@@ -2,9 +2,13 @@
 
 A calm, focused study workspace for JEE and NEET preparation.
 
-## Phase 1: project foundation and dashboard
+## Phase 1 — project foundation and dashboard
 
-This branch initializes the Next.js + TypeScript + Tailwind application and includes a responsive dark-first dashboard preview. The dashboard currently uses clearly labeled sample preview data; it is not connected to a student account or database yet. Authentication and persistent profiles are planned for the next implementation phase.
+This branch initializes the Next.js + TypeScript + Tailwind application and responsive dashboard shell.
+
+## Phase 2 — Smart Day Planner
+
+The planner now supports editable study sessions with subject/chapter/topic, time range and priority; status tracking (planned, completed, partial, missed); session deletion and next-day rescheduling; a weekly calendar; daily checklist; separate to-do list; configurable study-hour goal; and a productivity summary derived from completed items. The data persists in this browser using localStorage. It is device-local and is not synced between browsers or accounts. Empty states are shown instead of fabricated activity analytics.
 
 ## Run locally
 
@@ -23,18 +27,10 @@ npm run lint
 npm run build
 ```
 
+The GitHub editing environment does not provide a Node.js runtime, so these commands must be run in a local checkout or CI environment.
+
 ## Stack
 
-- Next.js App Router and React
-- TypeScript
-- Tailwind CSS
+- Next.js App Router, React, TypeScript
+- Tailwind CSS foundation and responsive custom styling
 - Lucide icons
-
-## Current scope
-
-- Responsive dashboard shell with dark/light theme toggle
-- Study navigation and mobile menu
-- Preview metric cards, focus-hours chart, chapter-zone overview, and today's plan
-- Accessible button labels and status feedback
-
-Planner, persistence, authentication, and real student analytics are not implemented in Phase 1. Preview values are intentionally marked as example data and must not be interpreted as a student's real results.
