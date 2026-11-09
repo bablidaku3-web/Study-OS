@@ -1,15 +1,15 @@
 # SHUNYA — AI StudyOS
 
-A calm JEE/NEET and broader exam-preparation workspace.
+## Phase 7 — Smart Performance Analysis & Auto Chapter Zone Suggestions
 
-## Phase 6 — Smart Revision
-- `/revision` provides due today, upcoming, overdue, and completed schedule views; revision completion notes/duration; reschedule and skip logging; per-chapter history; weekly completed revision activity; and revision counts/rate.
-- Schedules persist in a separate `shunya-revision-schedules-v1` localStorage repository. Default intervals are 1, 3, 7, 14, and 30 days; users can enter strictly ascending custom day intervals. Date keys are local calendar dates, avoiding UTC date drift.
-- Duplicate active schedules for the same exam, subject, and chapter are rejected. Schedule suggestions use actual unresolved Mistake Vault entries and saved Yellow/Red chapter zones; they do not invent performance data. Suggestions map existing science chapters to JEE/NEET and allow JEE, NEET, CA, or UPSC schedules.
-- CA/UPSC users can enter their own subject/chapter text. Chapter zone integration only uses the existing Physics/Chemistry/Mathematics/Biology syllabus.
+`/performance` analyzes submitted test attempts, saved Mistake Vault records, existing chapter zones, and revision history. It shows exam-filtered subject/chapter accuracy, submitted test score trends, recent chapter accuracy changes, repeated unresolved mistake categories, and revision-before/after comparisons when sufficient question-level data exists.
 
-## Existing data
-Planner, chapters, focus sessions, tests, attempts and mistakes retain their separate existing localStorage keys. Revision does not modify them.
+Zone suggestions require at least 5 answered questions per chapter, except a Red suggestion may be surfaced with at least 3 unresolved Mistake Vault entries while clearly stating that test evidence is insufficient. Green requires at least 80% overall accuracy and at least 70% recent accuracy when available with fewer than 2 unresolved mistakes. Red thresholds are <=45% accuracy, 3+ unresolved mistakes, or recent accuracy below 40%; other evidence suggests Yellow. These are transparent heuristics, not mastery claims. Suggestions only draw from actual submitted tests and actual vault entries. Existing assigned zones are protected from automatic writes; accepting applies only when zone is unassigned. Manual override is available and saved through the existing chapter repository.
+
+Revision comparisons require at least 5 answered chapter questions before and after the first completed revision. Results are labeled observational, not causal. Test/mock data supports JEE Main, JEE Advanced and NEET UG. CA/UPSC currently have no test-taking/question result source in Phase 5A, so performance analytics for those exams are unavailable unless matching question-level results are added.
+
+Existing localStorage data is retained. The only new key is `shunya-zone-suggestion-decisions-v1`; original chapter/test/attempt/mistake/revision keys are not migrated or rewritten except user-confirmed chapter-zone changes.
 
 ## Validation
-Run `npm run typecheck`, `npm run lint`, `npm run build` and test browser workflows in a local checkout. This editing environment does not provide Node.js, so these checks could not be executed here. Revision history and schedules are device-local, not account-synced.
+
+The editing environment has no Node.js runtime. `npm run typecheck`, `npm run lint`, `npm run build`, and browser checks were not run here. Run them in local checkout or CI. The Phase 6 page calls `testRepository.listAttempts()`, which was absent when inspected; Phase 7 adds that repository method as a backward-compatible read of the existing attempt key, also fixing the corresponding Phase 5B/6 call sites.
