@@ -3,18 +3,18 @@
 A calm, focused study workspace for JEE and NEET preparation.
 
 ## Phase 1 — project foundation and dashboard
-
-This branch initializes the Next.js + TypeScript + Tailwind application and responsive dashboard shell.
+Next.js App Router, TypeScript, Tailwind foundations and responsive shell.
 
 ## Phase 2 — Smart Day Planner
-
-The planner supports editable sessions, task status, rescheduling, a weekly calendar, daily checklist, separate To-do list, and a configurable daily goal. It persists under the existing `shunya-planner-v1` browser localStorage key. Chapter-management work uses a separate storage key and does not rewrite or migrate planner data.
+Editable sessions, daily goals, checklist, To-do list, weekly calendar and productivity summary persist in the existing `shunya-planner-v1` browser localStorage key.
 
 ## Phase 3 — Chapter Management foundation
+Visit `/chapters` for subject-wise chapter lists with manually assigned zones. Chapter data uses a separate `ChapterRepository` and the `shunya-chapters-v1` key.
 
-Visit `/chapters` for subject-wise Physics, Chemistry, Mathematics, and Biology chapter lists. Chapters start **Unassessed** (not assigned fabricated performance values). Students can manually set Green, Yellow, or Red zones, filter/search chapters, and add custom chapters. The data access layer is behind a `ChapterRepository` interface and currently uses its own versioned localStorage key, `shunya-chapters-v1`, so it can later be replaced with a Supabase implementation independently of the planner.
+## Phase 4 — Focus timers (initial scope)
+Visit `/focus` for customizable Pomodoro work/break and custom focus countdown timers. Choose a subject, chapter, optional topic, and activity before starting. Timers use wall-clock elapsed time while running, accumulate only active time across pauses, save completed focus blocks and save active runs as interrupted when leaving the page. Pomodoro break time is excluded. Session records are stored through a separate `FocusSessionRepository` under `shunya-focus-sessions-v1`; planner and chapter data are not rewritten.
 
-Automatic performance scoring, topic-level tracking, and test-driven zone updates are not part of this initial chapter-page task yet.
+Stopwatch, standalone countdown, interval/revision/break modes, focus analytics/charts and detailed history filters are not included in this initial Phase 4 increment.
 
 ## Run locally
 
@@ -25,7 +25,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Checks
+## Validation
 
 ```bash
 npm run typecheck
@@ -33,10 +33,9 @@ npm run lint
 npm run build
 ```
 
-The GitHub editing environment does not provide a Node.js runtime, so I cannot execute these commands from the repository editor. Run them in a local checkout or CI environment.
+The repository-editing environment does not provide a Node.js runtime, so these checks could not be run here. Please run them in local checkout or CI.
 
 ## Stack
-
 - Next.js App Router, React, TypeScript
 - Tailwind CSS foundation and responsive custom styling
 - Lucide icons
